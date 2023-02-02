@@ -1,0 +1,31 @@
+GET http://localhost:9999/sell?fruit=apple&quantity=5
+###
+GET http://localhost:9999/sdas
+###
+GET http://localhost:9999/buy?fruit=apple&quantity=10
+###
+POST http://localhost:9999/buy
+Content-Type: application/json
+
+{
+  "fruit": "orange",
+  "quantity": 10
+}
+###
+GET http://localhost:9999/buy?fruit=orange&quantity=20
+###
+GET http://localhost:9999
+###
+GET http://localhost:9999/sell?fruit=apple&quantity=5
+###
+POST http://localhost:9999/sell
+Content-Type: application/json
+
+{
+  "fruit": "orange",
+  "quantity": 10
+}
+###
+GET http://localhost:9999/sell?fruit=orange&quantity=10
+###
+GET http://localhost:9999
