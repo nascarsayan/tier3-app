@@ -1,7 +1,8 @@
 FROM node
 WORKDIR /app
-COPY package.json .
-RUN npm i
+COPY package-lock.json ./
+COPY package.json ./
+RUN npm ci
 COPY . .
 EXPOSE 8080
 CMD ["npm", "run", "dev"]
