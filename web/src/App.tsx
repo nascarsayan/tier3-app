@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import "./App.css";
+import { useEffect, useState } from 'preact/hooks'
+import { JSXInternal } from 'preact/src/jsx';
 
-function App() {
-  const [fruits, setFruits] = React.useState({} as { [key: string]: number });
+const BackendURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:9999";
+
+export function App() {
+  const [fruits, setFruits] = useState({} as { [key: string]: number });
 
   useEffect(() => {
-    fetch("http://localhost:9999/", {
+    fetch(BackendURL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -21,14 +23,14 @@ function App() {
       });
   }, []);
 
-  async function transact(e: React.FormEvent<HTMLFormElement>, mode: "buy" | "sell") {
+  async function transact(e: JSXInternal.TargetedEvent<HTMLFormElement, Event>, mode: "buy" | "sell") {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const fruit = formData.get("fruit") as string;
     const quantity = formData.get("quantity") as string;
     try {
-      let response = await fetch(`http://localhost:9999/${mode}`, {
+      let response = await fetch(`${BackendURL}/${mode}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,5 +103,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
