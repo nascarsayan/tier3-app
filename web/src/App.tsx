@@ -5,7 +5,7 @@ function App() {
   const [fruits, setFruits] = React.useState({} as { [key: string]: number });
 
   useEffect(() => {
-    fetch("http://localhost:9999/fruits", {
+    fetch("http://localhost:9999/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -24,7 +24,7 @@ func main() {
 	http.HandleFunc("/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" {
-				respondWithError(w, "Invalid API request\n")
+				respondWithError(w, "Invalid API request"+r.URL.Path+"\n")
 				return
 			}
 			respond(w)
