@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'preact/hooks'
-import { JSXInternal } from 'preact/src/jsx';
+import { useEffect, useState } from "preact/hooks";
+import { JSXInternal } from "preact/src/jsx";
 
 const BackendURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8081";
 
@@ -23,7 +23,10 @@ export function App() {
       });
   }, []);
 
-  async function transact(e: JSXInternal.TargetedEvent<HTMLFormElement, Event>, mode: "buy" | "sell") {
+  async function transact(
+    e: JSXInternal.TargetedEvent<HTMLFormElement, Event>,
+    mode: "buy" | "sell"
+  ) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
@@ -39,7 +42,7 @@ export function App() {
           fruit,
           quantity: parseInt(quantity),
         }),
-      })
+      });
       if (!response.ok) {
         let msg = "HTTP status code: " + response.status;
         let t = await response.text();
@@ -52,15 +55,18 @@ export function App() {
       let data = await response.json();
       console.log(data);
       setFruits(data["fruits"]);
-    }
-    catch (error) {
+    } catch (error) {
       alert(error);
     }
   }
 
   function getTransactForm(mode: "buy" | "sell") {
     return (
-      <form onSubmit={async (e) => { await transact(e, mode)}}>
+      <form
+        onSubmit={async (e) => {
+          await transact(e, mode);
+        }}
+      >
         <label>
           Fruit
           <select name="fruit">
@@ -75,7 +81,7 @@ export function App() {
         </label>
         <button type="submit">{mode}</button>
       </form>
-    ); 
+    );
   }
 
   return (
