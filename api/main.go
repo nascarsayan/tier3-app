@@ -1,14 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
-)
+	"time"
 
-var fruits map[string]int
+	redis "github.com/redis/go-redis/v9"
+)
 
 type Req struct {
 	Fruit    string `json:"fruit"`
@@ -19,19 +21,71 @@ type Res struct {
 	Fruits map[string]int `json:"fruits"`
 }
 
+var rdb *redis.Client
+
+func get(key string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	total, err := rdb.IncrBy(ctx, key, 0).Result()
+	return int(total), err
+}
+
+func incrBy(key string, quantity int) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	total, err := rdb.IncrBy(ctx, key, int64(quantity)).Result()
+	return int(total), err
+}
+
+func decrBy(key string, quantity int) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	total, err := rdb.DecrBy(ctx, key, int64(quantity)).Result()
+	return int(total), err
+}
+
+func list() (map[string]int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	defer cancel()
+	keys, err := rdb.Keys(ctx, "*").Result()
+	if err != nil {
+		return nil, err
+	}
+	m := make(map[string]int)
+	for _, key := range keys {
+		total, err := get(key)
+		if err != nil {
+			return nil, err
+		}
+		m[key] = total
+	}
+	return m, nil
+}
+
 func main() {
-	fruits = make(map[string]int)
+
+	redis_url := os.Getenv("REDIS_URL")
+	if len(redis_url) == 0 {
+		redis_url = "localhost:6379"
+	}
+
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     redis_url,
+		Password: "",
+		DB:       0,
+	})
+
 	http.HandleFunc("/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Path != "/" {
-				respondWithError(w, "Invalid API request"+r.URL.Path+"\n")
+				respondWithError(w, "Invalid API request at: "+r.URL.Path+"\n")
 				return
 			}
 			respond(w)
 		})
 	http.HandleFunc("/buy", buy)
 	http.HandleFunc("/sell", sell)
-	port := os.Getenv("PORT")
+	port := os.Getenv("API_PORT")
 	if len(port) == 0 {
 		port = "9999"
 	}
@@ -94,7 +148,13 @@ func buy(w http.ResponseWriter, r *http.Request) {
 	}
 	fruit := req.Fruit
 	c := req.Quantity
-	fruits[fruit] += c
+
+	_, err = incrBy(fruit, c)
+	if err != nil {
+		respondWithError(w, err.Error())
+		return
+	}
+
 	respond(w)
 }
 
@@ -110,16 +170,33 @@ func sell(w http.ResponseWriter, r *http.Request) {
 	}
 	fruit := req.Fruit
 	c := req.Quantity
-	if fruits[fruit] < c {
+
+	current, err := get(fruit)
+	if err != nil {
+		respondWithError(w, err.Error())
+		return
+	}
+
+	if current < c {
 		respondWithError(w, "not enough fruits\n")
 		return
 	}
-	fruits[fruit] -= c
+
+	_, err = decrBy(fruit, c)
+	if err != nil {
+		respondWithError(w, err.Error())
+		return
+	}
 	respond(w)
 }
 
 func respond(w http.ResponseWriter) {
 	enableCors(&w)
+	fruits, err := list()
+	if err != nil {
+		respondWithError(w, err.Error())
+		return
+	}
 	b, _ := json.Marshal(Res{fruits})
 	fmt.Fprint(w, string(b))
 }
