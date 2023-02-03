@@ -87,7 +87,7 @@ func main() {
 	http.HandleFunc("/sell", sell)
 	port := os.Getenv("API_PORT")
 	if len(port) == 0 {
-		port = "9999"
+		port = "8081"
 	}
 	fmt.Println("listening on port: ", port)
 	err := http.ListenAndServe(":"+port, nil)

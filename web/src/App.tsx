@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks'
 import { JSXInternal } from 'preact/src/jsx';
 
-const BackendURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:9999";
+const BackendURL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8081";
 
 export function App() {
   const [fruits, setFruits] = useState({} as { [key: string]: number });

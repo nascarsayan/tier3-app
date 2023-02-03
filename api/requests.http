@@ -1,10 +1,10 @@
-GET http://localhost:9999/sell?fruit=apple&quantity=5
+GET http://localhost:8081/sell?fruit=apple&quantity=5
 ###
-GET http://localhost:9999/sdas
+GET http://localhost:8081/
 ###
-GET http://localhost:9999/buy?fruit=apple&quantity=10
+GET http://localhost:8081/buy?fruit=apple&quantity=10
 ###
-POST http://localhost:9999/buy
+POST http://localhost:8081/buy
 Content-Type: application/json
 
 {
@@ -12,13 +12,13 @@ Content-Type: application/json
   "quantity": 10
 }
 ###
-GET http://localhost:9999/buy?fruit=orange&quantity=20
+GET http://localhost:8081/buy?fruit=orange&quantity=20
 ###
-GET http://localhost:9999
+GET http://localhost:8081
 ###
-GET http://localhost:9999/sell?fruit=apple&quantity=5
+GET http://localhost:8081/sell?fruit=apple&quantity=5
 ###
-POST http://localhost:9999/sell
+POST http://localhost:8081/sell
 Content-Type: application/json
 
 {
@@ -26,6 +26,6 @@ Content-Type: application/json
   "quantity": 10
 }
 ###
-GET http://localhost:9999/sell?fruit=orange&quantity=10
+GET http://localhost:8081/sell?fruit=orange&quantity=10
 ###
-GET http://localhost:9999
+GET http://localhost:8081
