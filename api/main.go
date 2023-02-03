@@ -23,41 +23,41 @@ type Res struct {
 
 var rdb *redis.Client
 
-func get(key string) (int, error) {
+func get(fruitName string) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	total, err := rdb.IncrBy(ctx, key, 0).Result()
+	total, err := rdb.IncrBy(ctx, fruitName, 0).Result()
 	return int(total), err
 }
 
-func incrBy(key string, quantity int) (int, error) {
+func incrBy(fruitName string, quantity int) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	total, err := rdb.IncrBy(ctx, key, int64(quantity)).Result()
+	total, err := rdb.IncrBy(ctx, fruitName, int64(quantity)).Result()
 	return int(total), err
 }
 
-func decrBy(key string, quantity int) (int, error) {
+func decrBy(fruitname string, quantity int) (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	total, err := rdb.DecrBy(ctx, key, int64(quantity)).Result()
+	total, err := rdb.DecrBy(ctx, fruitname, int64(quantity)).Result()
 	return int(total), err
 }
 
 func list() (map[string]int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	keys, err := rdb.Keys(ctx, "*").Result()
+	fruits, err := rdb.Keys(ctx, "*").Result()
 	if err != nil {
 		return nil, err
 	}
 	m := make(map[string]int)
-	for _, key := range keys {
-		total, err := get(key)
+	for _, fruitName := range fruits {
+		total, err := get(fruitName)
 		if err != nil {
 			return nil, err
 		}
-		m[key] = total
+		m[fruitName] = total
 	}
 	return m, nil
 }
