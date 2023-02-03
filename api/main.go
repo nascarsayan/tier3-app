@@ -147,9 +147,9 @@ func buy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fruit := req.Fruit
-	c := req.Quantity
+	quantity := req.Quantity
 
-	_, err = incrBy(fruit, c)
+	_, err = incrBy(fruit, quantity)
 	if err != nil {
 		respondWithError(w, err.Error())
 		return
@@ -169,7 +169,7 @@ func sell(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fruit := req.Fruit
-	c := req.Quantity
+	quantity := req.Quantity
 
 	current, err := get(fruit)
 	if err != nil {
@@ -177,12 +177,12 @@ func sell(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if current < c {
+	if current < quantity {
 		respondWithError(w, "not enough fruits\n")
 		return
 	}
 
-	_, err = decrBy(fruit, c)
+	_, err = decrBy(fruit, quantity)
 	if err != nil {
 		respondWithError(w, err.Error())
 		return
